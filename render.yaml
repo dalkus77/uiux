@@ -1,0 +1,22 @@
+# render.yaml
+# Render Blueprint for AI-based Health Habit Improvement Solution
+
+services:
+  - type: web
+    name: health-habit-solution
+    env: python
+    plan: free # You can change this to 'starter' or 'pro' for more resources
+    buildCommand: "pip install -r 프로젝트/backend/requirements.txt"
+    startCommand: "cd 프로젝트/backend && gunicorn app:app --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_RUN_PORT
+        value: 5000 # Default port, Render will override with $PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
+    # If you have a custom domain, uncomment and set it here:
+    # domains:
+    #   - health-habit.yourdomain.com
