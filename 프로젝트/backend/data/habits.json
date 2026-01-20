@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "type": "exercise",
+    "title": "30분 걷기",
+    "description": "하루 30분 이상 걷기",
+    "target": 30,
+    "unit": "분",
+    "completed": false,
+    "created_at": "2026-01-20T16:17:50.681088",
+    "updated_at": "2026-01-20T16:20:04.950261"
+  },
+  {
+    "id": 2,
+    "type": "water",
+    "title": "물 2L 마시기",
+    "description": "하루 물 2L 이상 마시기",
+    "target": 2,
+    "unit": "L",
+    "completed": true,
+    "created_at": "2026-01-20T16:17:50.681088",
+    "updated_at": "2026-01-20T16:19:32.236385"
+  },
+  {
+    "id": 3,
+    "type": "diet",
+    "title": "채소 3끼 먹기",
+    "description": "아침, 점심, 저녁에 채소 포함",
+    "target": 3,
+    "unit": "회",
+    "completed": true,
+    "created_at": "2026-01-20T16:17:50.681088",
+    "updated_at": "2026-01-20T16:19:59.600569"
+  }
+]

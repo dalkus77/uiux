@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+
+# Flask
+instance/
+.webassets-cache
+
+# 데이터 파일 (배포 시 초기화)
+backend/data/*.json
+!backend/data/.gitkeep
+
+# Node.js (이전 프로토타입)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# 개발 파일
+*.bat
+start.bat
+remove_nodejs.bat
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로그
+*.log
+
+# 환경 변수
+.env
+.env.local
+
+# 임시 파일
+*.tmp
+*.temp

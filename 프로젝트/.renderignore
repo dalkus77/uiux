@@ -1,0 +1,33 @@
+# 가상환경
+backend/.venv/
+.venv/
+venv/
+env/
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 데이터 파일 (배포 시 초기화)
+backend/data/*.json
+
+# 개발 파일
+*.bat
+start.bat
+remove_nodejs.bat
+
+# 이전 프로토타입 (사용 안 함)
+prototype/
+prototype-simple/
+
+# 문서 (필요시 포함)
+# *.md
+
+# 기타
+.DS_Store
+.vscode/
+.idea/
+*.log

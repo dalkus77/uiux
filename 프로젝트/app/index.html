@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI기반 건강습관 개선정보 제공 솔루션</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>AI기반 건강습관 개선정보 제공 솔루션</h1>
+            <p>프로토타입</p>
+        </div>
+    </div>
+
+    <!-- 대시보드 페이지 -->
+    <div id="dashboard" class="page active">
+        <div class="container">
+            <!-- 건강 점수 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>건강 점수</h2>
+                    <span class="ai-badge" title="AI 기반 분석">
+                        <span class="ai-icon">🤖</span>
+                        <span class="ai-text">AI</span>
+                    </span>
+                </div>
+                <div class="health-score" id="health-score">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>분석 중입니다...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주요 지표 -->
+            <div class="card">
+                <h2>주요 지표</h2>
+                <div class="indicators-grid" id="indicators">
+                    <div class="indicator">
+                        <div class="indicator-label">BMI</div>
+                        <div class="indicator-value">-</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">운동</div>
+                        <div class="indicator-value">-</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">식단</div>
+                        <div class="indicator-value">-</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">수면</div>
+                        <div class="indicator-value">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오늘 할 일 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>오늘 할 일</h2>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar-fill" style="width: 0%"></div>
+                </div>
+                <div class="habits-list" id="habits-list">
+                    <!-- 동적으로 로드됨 -->
+                </div>
+            </div>
+
+            <!-- 맞춤형 추천 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>맞춤형 추천</h2>
+                    <span class="ai-badge" title="AI 기반 추천">
+                        <span class="ai-icon">🤖</span>
+                        <span class="ai-text">AI</span>
+                    </span>
+                </div>
+                <div class="recommendations-grid" id="recommendations-grid">
+                    <!-- 동적으로 로드됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 추천 페이지 -->
+    <div id="recommendations" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>건강 정보 알아보기</h2>
+                    <span class="ai-badge" title="AI 기반 추천">
+                        <span class="ai-icon">🤖</span>
+                        <span class="ai-text">AI</span>
+                    </span>
+                </div>
+                <p class="page-subtitle">AI 분석 기반 추천</p>
+                <div class="recommendations-list" id="recommendations-list">
+                    <!-- 동적으로 로드됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 습관 페이지 -->
+    <div id="habits" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>건강 습관 실천하기</h2>
+                    <span id="habits-progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-large">
+                    <div class="progress-fill" id="habits-progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>오늘 할 일</h2>
+                <div class="habits-list" id="habits-list-page">
+                    <!-- 동적으로 로드됨 -->
+                </div>
+            </div>
+            <div class="card">
+                <h2>이번 주 실천 현황</h2>
+                <div class="stats-chart" id="weekly-stats">
+                    <div class="chart-placeholder">
+                        <p>📊 차트 영역</p>
+                        <p class="chart-note">주간 통계 데이터 표시</p>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showHabitInput()">습관 기록하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 습관 입력 모달 -->
+    <div id="habit-input-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>습관 기록하기</h2>
+                <button class="modal-close" onclick="closeHabitInput()">&times;</button>
+            </div>
+            <form id="habit-form" onsubmit="submitHabit(event)">
+                <div class="form-group">
+                    <label>습관 유형</label>
+                    <select id="habit-type" class="form-select" required>
+                        <option value="">선택하세요</option>
+                        <option value="exercise">운동</option>
+                        <option value="diet">식단</option>
+                        <option value="sleep">수면</option>
+                        <option value="water">물 섭취</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>습관 제목</label>
+                    <input type="text" id="habit-title" class="form-input" placeholder="예: 아침 운동하기" required>
+                </div>
+                <div class="form-group">
+                    <label>설명</label>
+                    <textarea id="habit-description" class="form-textarea" rows="4" placeholder="습관에 대한 설명을 입력하세요"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>목표</label>
+                    <div class="target-input-group">
+                        <input type="number" id="habit-target" class="form-input target-input" placeholder="30" required>
+                        <select id="habit-unit" class="form-select unit-select">
+                            <option value="분">분</option>
+                            <option value="시간">시간</option>
+                            <option value="회">회</option>
+                            <option value="L">L</option>
+                            <option value="kcal">kcal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeHabitInput()">취소</button>
+                    <button type="submit" class="btn btn-primary">저장하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 추천 상세 모달 -->
+    <div id="recommendation-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detail-title">추천 상세</h2>
+                <button class="modal-close" onclick="closeRecommendationDetail()">&times;</button>
+            </div>
+            <div class="detail-content" id="detail-content">
+                <!-- 동적으로 로드됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 프로젝트 문서 페이지 -->
+    <div id="documents" class="page">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>프로젝트 산출물</h2>
+                </div>
+                <div class="documents-tree-container" id="documents-tree">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>문서 목록을 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 문서 뷰어 모달 -->
+    <div id="document-modal" class="modal document-modal">
+        <div class="modal-content document-modal-content">
+            <div class="document-modal-header">
+                <h2 id="document-modal-title">문서 제목</h2>
+                <button class="modal-close" onclick="closeDocumentModal()">&times;</button>
+            </div>
+            <div class="document-modal-body" id="document-modal-body">
+                <div class="document-placeholder">
+                    <p>📄 문서를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 네비게이션 -->
+    <div class="nav">
+        <a href="#" class="nav-item active" onclick="showPage('dashboard'); return false;">
+            <span class="nav-icon">🏥</span>
+            <span>내 건강 상태</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('recommendations'); return false;">
+            <span class="nav-icon">💡</span>
+            <span>건강 정보</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('habits'); return false;">
+            <span class="nav-icon">✅</span>
+            <span>습관 실천</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('documents'); return false;">
+            <span class="nav-icon">📚</span>
+            <span>프로젝트 문서</span>
+        </a>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/documents.js"></script>
+</body>
+</html>

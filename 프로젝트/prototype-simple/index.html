@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI기반 건강습관 개선정보 제공 솔루션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #FF9800;
+            --accent-color: #2196F3;
+            --background-color: #FAFAFA;
+            --surface-color: #FFFFFF;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .card {
+            background: var(--surface-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .health-score {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .score-status {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .indicator {
+            text-align: center;
+            padding: 16px;
+            background: #F5F5F5;
+            border-radius: 8px;
+        }
+
+        .indicator-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .indicator-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .habit-item:last-child {
+            border-bottom: none;
+        }
+
+        .habit-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .habit-info {
+            flex: 1;
+        }
+
+        .habit-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .habit-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .recommendation-card {
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--surface-color);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background-color: #E0E0E0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s;
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface-color);
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 4px solid #E0E0E0;
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI기반 건강습관 개선정보 제공 솔루션</h1>
+        <p>프로토타입 (간단 버전)</p>
+    </div>
+
+    <!-- 대시보드 페이지 -->
+    <div id="dashboard" class="page active">
+        <div class="container">
+            <!-- 건강 점수 -->
+            <div class="card">
+                <h2>건강 점수 <span class="ai-badge">[AI]</span></h2>
+                <div class="health-score">
+                    <div class="score-number">75</div>
+                    <div class="score-status">주의 필요</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">
+                    신뢰도: 85%
+                </p>
+            </div>
+
+            <!-- 주요 지표 -->
+            <div class="card">
+                <h2>주요 지표</h2>
+                <div class="indicators-grid">
+                    <div class="indicator">
+                        <div class="indicator-label">BMI</div>
+                        <div class="indicator-value">24.5</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">운동</div>
+                        <div class="indicator-value">30분</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">식단</div>
+                        <div class="indicator-value">균형</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="indicator-label">수면</div>
+                        <div class="indicator-value">6시간</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오늘 할 일 -->
+            <div class="card">
+                <h2>오늘 할 일</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33%"></div>
+                </div>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" checked onchange="updateProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">30분 걷기</div>
+                        <div class="habit-desc">하루 30분 이상 걷기</div>
+                    </div>
+                </div>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" onchange="updateProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">물 2L 마시기</div>
+                        <div class="habit-desc">하루 물 2L 이상 마시기</div>
+                    </div>
+                </div>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" onchange="updateProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">채소 3끼 먹기</div>
+                        <div class="habit-desc">아침, 점심, 저녁에 채소 포함</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 맞춤형 추천 -->
+            <div class="card">
+                <h2>맞춤형 추천 <span class="ai-badge">[AI]</span></h2>
+                <div class="recommendation-card">
+                    <h3>아침 운동 습관 만들기</h3>
+                    <p>간단한 아침 운동으로 하루를 활기차게 시작하세요.</p>
+                    <button class="btn btn-secondary" onclick="showDetail(1)">왜 추천되었나요?</button>
+                    <button class="btn btn-primary">지금 시작하기</button>
+                </div>
+                <div class="recommendation-card">
+                    <h3>수면 시간 개선하기</h3>
+                    <p>규칙적인 수면으로 건강을 개선하세요.</p>
+                    <button class="btn btn-secondary" onclick="showDetail(2)">왜 추천되었나요?</button>
+                    <button class="btn btn-primary">지금 시작하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 추천 페이지 -->
+    <div id="recommendations" class="page">
+        <div class="container">
+            <div class="card">
+                <h2>건강 정보 알아보기 <span class="ai-badge">[AI]</span></h2>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    AI 분석 기반 추천
+                </p>
+                <div class="recommendation-card">
+                    <h3>아침 운동 습관 만들기</h3>
+                    <p>간단한 아침 운동으로 하루를 활기차게 시작하세요. 10분만 투자해도 건강에 큰 도움이 됩니다.</p>
+                    <p><strong>실행 가능성: ⭐⭐⭐⭐</strong></p>
+                    <button class="btn btn-secondary" onclick="showDetail(1)">왜 추천되었나요?</button>
+                    <button class="btn btn-primary">지금 시작하기</button>
+                </div>
+                <div class="recommendation-card">
+                    <h3>수면 시간 개선하기</h3>
+                    <p>규칙적인 수면으로 건강을 개선하세요. 충분한 수면은 모든 건강 지표에 긍정적인 영향을 줍니다.</p>
+                    <p><strong>실행 가능성: ⭐⭐⭐</strong></p>
+                    <button class="btn btn-secondary" onclick="showDetail(2)">왜 추천되었나요?</button>
+                    <button class="btn btn-primary">지금 시작하기</button>
+                </div>
+                <div class="recommendation-card">
+                    <h3>물 섭취량 늘리기</h3>
+                    <p>하루 물 2L 마시기로 건강을 개선하세요.</p>
+                    <p><strong>실행 가능성: ⭐⭐⭐⭐⭐</strong></p>
+                    <button class="btn btn-secondary" onclick="showDetail(3)">왜 추천되었나요?</button>
+                    <button class="btn btn-primary">지금 시작하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 습관 페이지 -->
+    <div id="habits" class="page">
+        <div class="container">
+            <div class="card">
+                <h2>건강 습관 실천하기</h2>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span>오늘의 목표</span>
+                    <strong id="progress-percent">33%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="main-progress" style="width: 33%"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>오늘 할 일</h2>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" checked onchange="updateMainProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">30분 걷기</div>
+                        <div class="habit-desc">하루 30분 이상 걷기</div>
+                    </div>
+                    <span style="color: var(--primary-color); font-size: 12px;">완료</span>
+                </div>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" onchange="updateMainProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">물 2L 마시기</div>
+                        <div class="habit-desc">하루 물 2L 이상 마시기</div>
+                    </div>
+                    <span style="color: var(--secondary-color); font-size: 12px;">진행중</span>
+                </div>
+                <div class="habit-item">
+                    <input type="checkbox" class="habit-checkbox" onchange="updateMainProgress()">
+                    <div class="habit-info">
+                        <div class="habit-title">채소 3끼 먹기</div>
+                        <div class="habit-desc">아침, 점심, 저녁에 채소 포함</div>
+                    </div>
+                    <span style="color: var(--secondary-color); font-size: 12px;">미완료</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 네비게이션 -->
+    <div class="nav">
+        <a href="#" class="nav-item active" onclick="showPage('dashboard'); return false;">
+            <span class="nav-icon">🏥</span>
+            <span>내 건강 상태</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('recommendations'); return false;">
+            <span class="nav-icon">💡</span>
+            <span>건강 정보</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('habits'); return false;">
+            <span class="nav-icon">✅</span>
+            <span>습관 실천</span>
+        </a>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 선택한 페이지 보이기
+            document.getElementById(pageId).classList.add('active');
+            
+            // 네비게이션 활성화
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('#dashboard .habit-checkbox');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const progress = (checked / checkboxes.length) * 100;
+            document.querySelector('#dashboard .progress-fill').style.width = progress + '%';
+        }
+
+        function updateMainProgress() {
+            const checkboxes = document.querySelectorAll('#habits .habit-checkbox');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const progress = (checked / checkboxes.length) * 100;
+            document.getElementById('main-progress').style.width = progress + '%';
+            document.getElementById('progress-percent').textContent = Math.round(progress) + '%';
+        }
+
+        function showDetail(id) {
+            const details = {
+                1: {
+                    title: '아침 운동 습관 만들기',
+                    reason: '현재 운동 시간이 부족하여 건강 점수에 영향을 주고 있습니다. 아침 시간을 활용하면 업무 스케줄에 맞춰 운동을 지속할 수 있습니다.',
+                    steps: [
+                        '아침에 일어나자마자 5분 스트레칭',
+                        '간단한 유산소 운동 10분 (걷기, 조깅)',
+                        '물 한 잔 마시기',
+                        '일주일간 지속 후 습관화'
+                    ],
+                    effects: [
+                        '건강 점수 10점 향상 예상',
+                        '에너지 레벨 증가',
+                        '스트레스 감소'
+                    ]
+                },
+                2: {
+                    title: '수면 시간 개선하기',
+                    reason: '현재 평균 수면 시간이 6시간으로 부족합니다. 수면 부족은 건강 점수에 -5점의 영향을 주고 있습니다.',
+                    steps: [
+                        '매일 같은 시간에 잠자리에 들기',
+                        '잠들기 1시간 전 스마트폰 사용 중단',
+                        '침실 환경 조성 (어둡고 조용하게)',
+                        '수면 시간 7-8시간 목표'
+                    ],
+                    effects: [
+                        '건강 점수 5점 향상 예상',
+                        '집중력 향상',
+                        '면역력 강화'
+                    ]
+                },
+                3: {
+                    title: '물 섭취량 늘리기',
+                    reason: '수분 섭취가 부족하여 신진대사가 느려지고 있습니다. 간단한 습관으로 큰 효과를 볼 수 있습니다.',
+                    steps: [
+                        '아침에 일어나자마자 물 한 잔',
+                        '식사 전후 물 마시기',
+                        '물병을 항상 가까이 두기',
+                        '앱 알림으로 리마인더 설정'
+                    ],
+                    effects: [
+                        '건강 점수 3점 향상 예상',
+                        '피부 건강 개선',
+                        '소화 기능 향상'
+                    ]
+                }
+            };
+
+            const detail = details[id];
+            if (!detail) return;
+
+            const content = `
+                <div style="padding: 20px;">
+                    <h2 style="margin-bottom: 20px;">${detail.title}</h2>
+                    <div style="background: #E3F2FD; padding: 16px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--accent-color);">
+                        <h3 style="margin-bottom: 12px;">추천 이유</h3>
+                        <p>${detail.reason}</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 12px;">실행 방법</h3>
+                        <ol style="line-height: 2; padding-left: 24px;">
+                            ${detail.steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 12px;">기대 효과</h3>
+                        <ul style="line-height: 2; padding-left: 24px;">
+                            ${detail.effects.map(effect => `<li>${effect}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary" onclick="alert('시작되었습니다!'); window.history.back();" style="width: 100%;">
+                        지금 시작하기
+                    </button>
+                </div>
+            `;
+
+            const newWindow = window.open('', '_blank', 'width=600,height=700');
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${detail.title}</title>
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>
+            `);
+        }
+    </script>
+</body>
+</html>
