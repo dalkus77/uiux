@@ -404,6 +404,35 @@ def get_document(filename):
     except Exception as e:
         return jsonify({"error": f"파일 읽기 오류: {str(e)}"}), 500
 
+@app.route('/api/images/<filename>', methods=['GET'])
+def get_image(filename):
+    """이미지 파일 제공"""
+    import urllib.parse
+    
+    # 파일명 디코딩
+    filename = urllib.parse.unquote(filename)
+    
+    # 보안: 상위 디렉토리 접근 방지
+    if '..' in filename or '/' in filename or '\\' in filename:
+        return jsonify({"error": "잘못된 파일 경로"}), 400
+    
+    # 허용된 이미지 파일만
+    allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+    if not any(filename.lower().endswith(ext) for ext in allowed_extensions):
+        return jsonify({"error": "지원하지 않는 파일 형식"}), 400
+    
+    # 프로젝트 루트에서 이미지 파일 찾기
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    filepath = os.path.join(project_root, filename)
+    
+    if not os.path.exists(filepath):
+        return jsonify({"error": "파일을 찾을 수 없습니다"}), 404
+    
+    try:
+        return send_from_directory(project_root, filename)
+    except Exception as e:
+        return jsonify({"error": f"파일 읽기 오류: {str(e)}"}), 500
+
 @app.route('/')
 def index():
     """프론트엔드 메인 페이지"""
